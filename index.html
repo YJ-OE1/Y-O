@@ -8,120 +8,217 @@
 <style>
 :root{--accent-pink:#ff1493;--accent-blue:#00bfff}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;width:100%}
-body{font-family:"Montserrat",sans-serif;color:#222;overflow:hidden}
+html,body{height:100%;width:100%;overflow:hidden;background:#1a1a2e}
 
 /* ── INTRO ── */
-#intro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(245,243,241,.97));z-index:40}
+#intro{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 30%, #2d1b4e 0%, #1a1a2e 60%, #0d0d1a 100%);
+  z-index:40;
+}
 #intro.hidden{display:none}
 
-/* ── ENVELOPE WRAP — vertical (portrait 1:1.4) ── */
-.envelope-wrap{
-  width:min(55vw,260px);
-  aspect-ratio:1/1.4;
-  position:relative;cursor:pointer;
+/* Stars background */
+#intro::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 25% 60%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1px 1px at 55% 75%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1px 1px at 70% 35%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 85% 80%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1px 1px at 60% 50%, rgba(255,255,255,.4), transparent),
+    radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,.7), transparent),
+    radial-gradient(2px 2px at 45% 90%, rgba(255,192,203,.6), transparent),
+    radial-gradient(2px 2px at 80% 55%, rgba(173,216,230,.5), transparent);
+  pointer-events:none;
+}
+
+/* ── PHONE FRAME — covers full viewport ── */
+.phone-frame{
+  position:relative;
+  width:min(100vw, calc(100vh * 0.46));
+  height:min(100vh, calc(100vw * 2.17));
+  background:linear-gradient(145deg,#2a2a3e,#1a1a2e);
+  border-radius:min(5vw, 44px);
+  box-shadow:
+    0 0 0 min(1vw, 8px) #2e2e4a,
+    0 0 0 min(1.5vw, 12px) #1a1a2e,
+    0 0 0 min(1.8vw, 14px) #3a3a5c,
+    0 40px 120px rgba(0,0,0,.8),
+    inset 0 0 60px rgba(255,20,147,.03);
+  cursor:pointer;
+  overflow:hidden;
   animation:float 4s ease-in-out infinite;
-  perspective:1200px;
 }
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(1deg)}}
 
-/* body of the envelope */
-.envelope{
-  width:100%;height:100%;
-  background:linear-gradient(135deg,#fff9f5 0%,#fff0e6 100%);
-  border-radius:10px;
-  box-shadow:0 20px 50px rgba(0,0,0,.15);
-  position:relative;overflow:hidden;
+/* Phone notch */
+.phone-notch{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:35%;height:min(4vw, 28px);
+  background:#1a1a2e;
+  border-radius:0 0 min(2vw, 18px) min(2vw, 18px);
+  z-index:20;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
-
-/* Decorative back flaps (bottom triangle visible on body) */
-.envelope::before{
-  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
-/*  background:*/
-    /* bottom triangle */
-/*    linear-gradient(to top right, #f0d9c8 0%, #f0d9c8 50%, transparent 50%),
-    linear-gradient(to top left,  #f0d9c8 0%, #f0d9c8 50%, transparent 50%);*/
-  background-size:50% 45%, 50% 45%;
-  background-position:bottom left, bottom right;
-  background-repeat:no-repeat;
-  pointer-events:none;z-index:1;
-}
-/* top triangle (right side flap) */
-.envelope::after{
-  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
-/*  background:
-    linear-gradient(to bottom right, #f5e8dc 0%, #f5e8dc 50%, transparent 50%),
-    linear-gradient(to bottom left,  #f5e8dc 0%, #f5e8dc 50%, transparent 50%);*/
-  background-size:50% 50%, 50% 50%;
-  background-position:top left, top right;
-  background-repeat:no-repeat;
-  pointer-events:none;z-index:1;
+.phone-notch::after{
+  content:'';width:8px;height:8px;background:#2a2a4a;border-radius:50%;
+  box-shadow:inset 0 0 4px rgba(0,191,255,.3);
 }
 
-/* ── LEFT FLAP — triangular, opens toward the right ── */
-.flap{
-  position:absolute;top:0;left:0;
-  width:100%;height:100%;
-  /* Triangle pointing right: covers left half as a pointed flap */
-  clip-path:polygon(0 0, 50% 50%, 0 100%);
-  background:linear-gradient(135deg,#fff5ec 0%,#ffdfc8 60%,#ffd0b0 100%);
-  display:flex;align-items:center;justify-content:flex-start;
-  padding-left:6%;
-  font-size:1.1rem;font-weight:600;letter-spacing:2px;
-  color:rgba(0,0,0,.35);
-  filter:drop-shadow(4px 0 8px rgba(0,0,0,.12));
-  z-index:5;
-  transform-origin:left center;
-  transform:rotateY(0deg);
-}
+/* Phone side buttons */
+.phone-btn-r{position:absolute;right:min(-2vw,-10px);top:25%;width:min(1.2vw,8px);height:min(8vw,55px);background:#2e2e4a;border-radius:0 4px 4px 0}
+.phone-btn-l1{position:absolute;left:min(-2vw,-10px);top:20%;width:min(1.2vw,8px);height:min(4vw,30px);background:#2e2e4a;border-radius:4px 0 0 4px}
+.phone-btn-l2{position:absolute;left:min(-2vw,-10px);top:30%;width:min(1.2vw,8px);height:min(4vw,30px);background:#2e2e4a;border-radius:4px 0 0 4px}
 
-@keyframes flapOpenLR{
-  0%  {transform:rotateY(0deg)}
-  100%{transform:rotateY(-180deg)}
-}
-.envelope-wrap.opening .flap{
-  animation:flapOpenLR 1.8s cubic-bezier(.17,.67,.38,1.23) forwards;
-}
-
-@keyframes envelopeExplode{
-  0%  {transform:scale(1);opacity:1}
-  100%{transform:scale(1.5);opacity:0}
-}
-.envelope-wrap.opening .envelope{
-  animation:envelopeExplode 2s cubic-bezier(.25,.46,.45,.94) forwards 1.5s
-}
-
-/* ── SEAL — centred on the envelope body ── */
-.seal{
-  position:absolute;top:50%;left:50%;
-  z-index:7 !important;
-  transform:translate(-50%,-50%);
-  width:64px;height:64px;
-  background:radial-gradient(circle at 35% 35%,#ff4444,#dd0000 30%,#bb0000 70%,#990000 100%);
-  border-radius:50%;
-  box-shadow:0 8px 20px rgba(0,0,0,.25),inset 0 4px 8px rgba(255,255,255,.2);
-  transition:all .8s ease;
+/* Screen inside phone */
+.phone-screen{
+  position:absolute;inset:min(2vw,14px);
+  border-radius:min(4vw,34px);
+  background:linear-gradient(170deg,#fff9f5 0%,#fff0e6 50%,#fde8d8 100%);
+  overflow:hidden;
   display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:1.1rem;color:#fff;
-  letter-spacing:1px;text-shadow:0 2px 4px rgba(0,0,0,.3);
-}
-.envelope-wrap.opening .seal{
-  transform:translate(-50%,-50%) scale(.7);opacity:.6;
 }
 
-/* hint text */
-.hint{
-  position:absolute;bottom:-50px;left:50%;transform:translateX(-50%);
-  font-size:.85rem;color:rgba(0,0,0,.5);white-space:nowrap;transition:opacity .5s ease;
+/* Screen glow */
+.phone-screen::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,20,147,.05) 0%,transparent 50%,rgba(0,191,255,.05) 100%);
+  pointer-events:none;z-index:1;
 }
-.envelope-wrap.opening .hint{opacity:0}
+
+/* ── ENVELOPE INSIDE SCREEN ── */
+.envelope-inner{
+  position:relative;
+  width:78%;
+  max-width:220px;
+  z-index:5;
+}
+
+/* envelope body */
+.env-body{
+  width:100%;
+  padding-top:62%; /* aspect ratio for landscape envelope */
+  position:relative;
+  background:linear-gradient(145deg,#fff5ec,#ffdfc8);
+  border-radius:8px;
+  box-shadow:0 20px 50px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.8);
+}
+
+/* back flap lines */
+.env-body::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(135deg, transparent 49.5%, #f5dcc8 49.5%, #f5dcc8 50.5%, transparent 50.5%),
+    linear-gradient(225deg, transparent 49.5%, #f5dcc8 49.5%, #f5dcc8 50.5%, transparent 50.5%);
+  border-radius:8px;
+  pointer-events:none;
+}
+
+/* top flap (opens upward) */
+.env-flap-top{
+  position:absolute;bottom:100%;left:0;width:100%;
+  height:0;border-left:calc(var(--ew)/2) solid transparent;border-right:calc(var(--ew)/2) solid transparent;border-bottom:calc(var(--ew)*0.38) solid #f0cdb0;
+  transform-origin:bottom center;
+  filter:drop-shadow(0 -4px 8px rgba(0,0,0,.1));
+  z-index:6;
+  transition:none;
+}
+
+/* We use a different approach — absolute positioned div triangle */
+.env-top{
+  position:absolute;
+  left:0;bottom:100%;width:100%;
+  aspect-ratio:2/0.8;
+  overflow:hidden;
+  transform-origin:bottom center;
+  z-index:6;
+}
+.env-top svg{width:100%;height:100%}
+
+.env-seal{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:min(13vw,52px);height:min(13vw,52px);
+  background:radial-gradient(circle at 35% 35%,#ff6666,#cc0000 40%,#990000 100%);
+  border-radius:50%;
+  box-shadow:0 6px 18px rgba(0,0,0,.3),inset 0 3px 6px rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:min(3vw,11px);color:#fff;letter-spacing:1px;
+  text-shadow:0 1px 3px rgba(0,0,0,.4);
+  z-index:8;
+}
+
+/* ── OPENING ANIMATION ── */
+@keyframes flapOpen{
+  0%{transform:rotateX(0deg)}
+  100%{transform:rotateX(-180deg)}
+}
+@keyframes phoneShake{
+  0%,100%{transform:translateY(0) rotate(-1deg)}
+  20%{transform:translateY(-5px) rotate(-3deg)}
+  40%{transform:translateY(-18px) rotate(2deg)}
+  60%{transform:translateY(-10px) rotate(-1deg)}
+  80%{transform:translateY(-20px) rotate(1deg)}
+}
+@keyframes phoneExplode{
+  0%{transform:scale(1);opacity:1}
+  100%{transform:scale(1.6);opacity:0}
+}
+@keyframes screenFlash{
+  0%{background:linear-gradient(170deg,#fff9f5,#fff0e6,#fde8d8)}
+  50%{background:radial-gradient(circle at center,#fff 0%,#ffd6e8 40%,#fff0e6 100%)}
+  100%{background:linear-gradient(170deg,#fff9f5,#fff0e6,#fde8d8)}
+}
+
+.phone-frame.opening{
+  animation:phoneShake .6s ease-in-out,phoneExplode 1.2s ease-in .6s forwards;
+}
+.phone-frame.opening .env-top{
+  animation:flapOpen .8s cubic-bezier(.17,.67,.38,1.2) .1s forwards;
+  transform-style:preserve-3d;
+}
+.phone-frame.opening .phone-screen{
+  animation:screenFlash .8s ease .1s;
+}
+
+/* hint */
+.hint{
+  position:absolute;bottom:-55px;left:50%;transform:translateX(-50%);
+  font-family:'Montserrat',sans-serif;font-size:min(3.5vw,.85rem);
+  color:rgba(255,255,255,.55);white-space:nowrap;
+  letter-spacing:2px;text-transform:uppercase;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+.hint::before{content:'↑ ';opacity:.7}
+
+/* Phone screen decorations */
+.screen-deco{
+  position:absolute;width:100%;height:100%;pointer-events:none;z-index:2;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,20,147,.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(0,191,255,.08) 0%, transparent 40%);
+}
+
+/* corner flowers */
+.corner-flower{
+  position:absolute;font-size:min(5vw,22px);opacity:.4;
+}
+.corner-flower:nth-child(1){top:8%;left:8%}
+.corner-flower:nth-child(2){top:8%;right:8%;transform:scaleX(-1)}
+.corner-flower:nth-child(3){bottom:8%;left:8%;transform:scaleY(-1)}
+.corner-flower:nth-child(4){bottom:8%;right:8%;transform:scale(-1,-1)}
 
 /* ── EFFECTS ── */
 #lightExplosion{position:fixed;inset:0;
-  background:radial-gradient(circle at center,rgba(255,192,203,1) 0%,rgba(255,192,203,.95) 15%,rgba(255,182,193,.8) 35%,transparent 70%);
-  z-index:50;display:none;filter:blur(2px);pointer-events:none}
-@keyframes lightExplode{0%{transform:scale(0);opacity:1}60%{transform:scale(2);opacity:1}100%{transform:scale(3);opacity:0}}
+  background:radial-gradient(circle at center,rgba(255,192,203,1) 0%,rgba(255,182,193,.95) 20%,rgba(255,20,147,.4) 50%,transparent 70%);
+  z-index:50;display:none;filter:blur(3px);pointer-events:none}
+@keyframes lightExplode{0%{transform:scale(0);opacity:1}60%{transform:scale(2.5);opacity:.9}100%{transform:scale(4);opacity:0}}
 #lightExplosion.active{display:block;animation:lightExplode 2s cubic-bezier(.25,.46,.45,.94) forwards}
 
 #fireworks{position:fixed;inset:0;z-index:28;pointer-events:none}
@@ -129,12 +226,12 @@ body{font-family:"Montserrat",sans-serif;color:#222;overflow:hidden}
   animation:explode var(--duration) ease-out forwards}
 @keyframes explode{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--vx),var(--vy)) scale(0);opacity:0}}
 
-#bloom{position:fixed;left:50%;top:50%;width:250px;height:250px;border-radius:50%;
+#bloom{position:fixed;left:50%;top:50%;width:300px;height:300px;border-radius:50%;
   transform:translate(-50%,-50%) scale(0);
   background:radial-gradient(circle,rgba(255,20,147,.7),rgba(0,191,255,.4),transparent);
   z-index:25;pointer-events:none}
-@keyframes bloomExpand{0%{transform:translate(-50%,-50%) scale(0);opacity:1}100%{transform:translate(-50%,-50%) scale(3);opacity:0}}
-#bloom.active{animation:bloomExpand 1s ease-out forwards}
+@keyframes bloomExpand{0%{transform:translate(-50%,-50%) scale(0);opacity:1}100%{transform:translate(-50%,-50%) scale(4);opacity:0}}
+#bloom.active{animation:bloomExpand 1.2s ease-out forwards}
 
 #particles{position:fixed;inset:0;z-index:30;pointer-events:none}
 .particle{position:absolute;border-radius:50%;will-change:transform,opacity;pointer-events:none;
@@ -178,13 +275,39 @@ h1{font-size:2.2rem;font-weight:600;letter-spacing:2px;margin-bottom:15px}
 <div id="lightExplosion"></div>
 
 <div id="intro">
-  <div class="envelope-wrap" id="envelopeWrap">
-    <div class="envelope">
-      <div class="flap">Y&M</div>
-      <div class="seal">Y&M</div>
+  <div class="phone-frame" id="phoneFrame">
+    <!-- Phone hardware details -->
+    <div class="phone-notch"></div>
+    <div class="phone-btn-r"></div>
+    <div class="phone-btn-l1"></div>
+    <div class="phone-btn-l2"></div>
+
+    <!-- Screen -->
+    <div class="phone-screen" id="phoneScreen">
+      <div class="screen-deco"></div>
+      <span class="corner-flower">✿</span>
+      <span class="corner-flower">✿</span>
+      <span class="corner-flower">✿</span>
+      <span class="corner-flower">✿</span>
+
+      <!-- Envelope content -->
+      <div class="envelope-inner" id="envelopeInner">
+        <!-- Top flap (triangle pointing up) -->
+        <div class="env-top" id="envFlap">
+          <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+            <polygon points="0,80 100,0 200,80" fill="#f0cdb0"/>
+            <polygon points="0,80 100,15 200,80" fill="#fde0c4" opacity=".6"/>
+          </svg>
+        </div>
+        <!-- Envelope body -->
+        <div class="env-body">
+          <!-- Seal centered -->
+          <div class="env-seal">Y&M</div>
+        </div>
+      </div>
     </div>
-    <div class="hint">Cliquez pour ouvrir</div>
   </div>
+  <div class="hint">Cliquez pour ouvrir</div>
 </div>
 
 <div class="website" id="website">
@@ -192,7 +315,7 @@ h1{font-size:2.2rem;font-weight:600;letter-spacing:2px;margin-bottom:15px}
 <canvas id="main-canvas" class="fireworks-bg"></canvas>
 
 <section class="section">
-  <h1>Mariage ♥</h1>
+  <h1>YOUSSEF ♥ OUMAIMA</h1>
   <div class="sub">04 • 04 • 2026</div>
   <div class="invitation-text">Nous vous invitons à célébrer<br>l'union de nos cœurs</div>
   <div class="countdown">
@@ -227,7 +350,7 @@ h1{font-size:2.2rem;font-weight:600;letter-spacing:2px;margin-bottom:15px}
 </div>
 
 <script>
-const envelope=document.getElementById('envelopeWrap');
+const phoneFrame=document.getElementById('phoneFrame');
 const intro=document.getElementById('intro');
 const website=document.getElementById('website');
 const fireworksContainer=document.getElementById('fireworks');
@@ -239,11 +362,11 @@ let opened=false;
 function openEnvelope(){
   if(opened)return;
   opened=true;
-  envelope.classList.add('opening');
-  lightExplosion.classList.add('active');
-  setTimeout(()=>{bloom.classList.add('active');createFireworks();},500);
-  setTimeout(()=>{createParticles();},700);
-  setTimeout(()=>{intro.style.display='none';website.style.display='block';startFireworksAnimation();},2000);
+  phoneFrame.classList.add('opening');
+  setTimeout(()=>{lightExplosion.classList.add('active');},400);
+  setTimeout(()=>{bloom.classList.add('active');createFireworks();},600);
+  setTimeout(()=>{createParticles();},800);
+  setTimeout(()=>{intro.style.display='none';website.style.display='block';startFireworksAnimation();},1800);
 }
 
 function createFireworks(){
@@ -297,8 +420,8 @@ function startFireworksAnimation(){
   },1500);
 }
 
-envelope.addEventListener('click',openEnvelope);
-envelope.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEnvelope();}});
+phoneFrame.addEventListener('click',openEnvelope);
+phoneFrame.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEnvelope();}});
 
 const weddingDate=new Date("Apr 04, 2026 19:00:00").getTime();
 function updateCountdown(){
