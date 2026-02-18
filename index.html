@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Y & M — Invitation</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Great+Vibes&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent-pink:#ff1493;--accent-blue:#00bfff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%}
+body{font-family:"Montserrat",sans-serif;color:#222;overflow:hidden}
+
+/* ── INTRO ── */
+#intro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(245,243,241,.97));z-index:40}
+#intro.hidden{display:none}
+
+/* ── ENVELOPE WRAP — vertical (portrait 1:1.4) ── */
+.envelope-wrap{
+  width:min(55vw,260px);
+  aspect-ratio:1/1.4;
+  position:relative;cursor:pointer;
+  animation:float 4s ease-in-out infinite;
+  perspective:1200px;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* body of the envelope */
+.envelope{
+  width:100%;height:100%;
+  background:linear-gradient(135deg,#fff9f5 0%,#fff0e6 100%);
+  border-radius:10px;
+  box-shadow:0 20px 50px rgba(0,0,0,.15);
+  position:relative;overflow:hidden;
+}
+
+/* Decorative back flaps (bottom triangle visible on body) */
+.envelope::before{
+  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+/*  background:*/
+    /* bottom triangle */
+/*    linear-gradient(to top right, #f0d9c8 0%, #f0d9c8 50%, transparent 50%),
+    linear-gradient(to top left,  #f0d9c8 0%, #f0d9c8 50%, transparent 50%);*/
+  background-size:50% 45%, 50% 45%;
+  background-position:bottom left, bottom right;
+  background-repeat:no-repeat;
+  pointer-events:none;z-index:1;
+}
+/* top triangle (right side flap) */
+.envelope::after{
+  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+/*  background:
+    linear-gradient(to bottom right, #f5e8dc 0%, #f5e8dc 50%, transparent 50%),
+    linear-gradient(to bottom left,  #f5e8dc 0%, #f5e8dc 50%, transparent 50%);*/
+  background-size:50% 50%, 50% 50%;
+  background-position:top left, top right;
+  background-repeat:no-repeat;
+  pointer-events:none;z-index:1;
+}
+
+/* ── LEFT FLAP — triangular, opens toward the right ── */
+.flap{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  /* Triangle pointing right: covers left half as a pointed flap */
+  clip-path:polygon(0 0, 50% 50%, 0 100%);
+  background:linear-gradient(135deg,#fff5ec 0%,#ffdfc8 60%,#ffd0b0 100%);
+  display:flex;align-items:center;justify-content:flex-start;
+  padding-left:6%;
+  font-size:1.1rem;font-weight:600;letter-spacing:2px;
+  color:rgba(0,0,0,.35);
+  filter:drop-shadow(4px 0 8px rgba(0,0,0,.12));
+  z-index:5;
+  transform-origin:left center;
+  transform:rotateY(0deg);
+}
+
+@keyframes flapOpenLR{
+  0%  {transform:rotateY(0deg)}
+  100%{transform:rotateY(-180deg)}
+}
+.envelope-wrap.opening .flap{
+  animation:flapOpenLR 1.8s cubic-bezier(.17,.67,.38,1.23) forwards;
+}
+
+@keyframes envelopeExplode{
+  0%  {transform:scale(1);opacity:1}
+  100%{transform:scale(1.5);opacity:0}
+}
+.envelope-wrap.opening .envelope{
+  animation:envelopeExplode 2s cubic-bezier(.25,.46,.45,.94) forwards 1.5s
+}
+
+/* ── SEAL — centred on the envelope body ── */
+.seal{
+  position:absolute;top:50%;left:50%;
+  z-index:7 !important;
+  transform:translate(-50%,-50%);
+  width:64px;height:64px;
+  background:radial-gradient(circle at 35% 35%,#ff4444,#dd0000 30%,#bb0000 70%,#990000 100%);
+  border-radius:50%;
+  box-shadow:0 8px 20px rgba(0,0,0,.25),inset 0 4px 8px rgba(255,255,255,.2);
+  transition:all .8s ease;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:1.1rem;color:#fff;
+  letter-spacing:1px;text-shadow:0 2px 4px rgba(0,0,0,.3);
+}
+.envelope-wrap.opening .seal{
+  transform:translate(-50%,-50%) scale(.7);opacity:.6;
+}
+
+/* hint text */
+.hint{
+  position:absolute;bottom:-50px;left:50%;transform:translateX(-50%);
+  font-size:.85rem;color:rgba(0,0,0,.5);white-space:nowrap;transition:opacity .5s ease;
+}
+.envelope-wrap.opening .hint{opacity:0}
+
+/* ── EFFECTS ── */
+#lightExplosion{position:fixed;inset:0;
+  background:radial-gradient(circle at center,rgba(255,192,203,1) 0%,rgba(255,192,203,.95) 15%,rgba(255,182,193,.8) 35%,transparent 70%);
+  z-index:50;display:none;filter:blur(2px);pointer-events:none}
+@keyframes lightExplode{0%{transform:scale(0);opacity:1}60%{transform:scale(2);opacity:1}100%{transform:scale(3);opacity:0}}
+#lightExplosion.active{display:block;animation:lightExplode 2s cubic-bezier(.25,.46,.45,.94) forwards}
+
+#fireworks{position:fixed;inset:0;z-index:28;pointer-events:none}
+.firework{position:fixed;border-radius:50%;will-change:transform,opacity;pointer-events:none;
+  animation:explode var(--duration) ease-out forwards}
+@keyframes explode{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--vx),var(--vy)) scale(0);opacity:0}}
+
+#bloom{position:fixed;left:50%;top:50%;width:250px;height:250px;border-radius:50%;
+  transform:translate(-50%,-50%) scale(0);
+  background:radial-gradient(circle,rgba(255,20,147,.7),rgba(0,191,255,.4),transparent);
+  z-index:25;pointer-events:none}
+@keyframes bloomExpand{0%{transform:translate(-50%,-50%) scale(0);opacity:1}100%{transform:translate(-50%,-50%) scale(3);opacity:0}}
+#bloom.active{animation:bloomExpand 1s ease-out forwards}
+
+#particles{position:fixed;inset:0;z-index:30;pointer-events:none}
+.particle{position:absolute;border-radius:50%;will-change:transform,opacity;pointer-events:none;
+  animation:particleFloat 1.2s ease-out forwards}
+@keyframes particleFloat{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
+
+/* ── WEBSITE ── */
+.website{display:none;width:100%;height:100vh;overflow-y:scroll;
+  scroll-snap-type:y mandatory;scroll-behavior:smooth;position:relative;
+  background:linear-gradient(180deg,#f6f4f2 0%,#ececec 100%)}
+.fireworks-bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5}
+.section{min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;text-align:center;position:relative;width:100%;z-index:10}
+.section:first-of-type{background:url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80') center/cover no-repeat;background-attachment:fixed}
+.section:first-of-type::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:5}
+.section:first-of-type > *{position:relative;z-index:6}
+h1{font-size:2.2rem;font-weight:600;letter-spacing:2px;margin-bottom:15px}
+.sub{font-size:1.1rem;font-weight:300;color:rgba(0,0,0,.6);margin-bottom:30px}
+.invitation-text{font-family:'Great Vibes',cursive;font-size:3rem;font-weight:400;color:rgba(0,0,0,.8);line-height:1.8;margin-bottom:40px;max-width:700px}
+.invitation-text-small{font-family:'Great Vibes',cursive;font-size:2rem;font-weight:400;color:rgba(0,0,0,.7);margin-top:20px}
+.countdown{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+.counter{background:#fff;padding:20px 25px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.08);min-width:90px;text-align:center}
+.counter h2{color:var(--accent-pink);font-size:2rem;margin:0 0 8px 0}
+.counter span{font-size:.85rem;color:rgba(0,0,0,.5);display:block}
+.location-container{display:flex;gap:40px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:40px;width:100%;max-width:1200px}
+.map-wrap{flex:1;min-width:280px;max-width:500px;border-radius:14px;overflow:hidden;box-shadow:0 15px 40px rgba(0,0,0,.1);height:350px}
+.map-wrap iframe{width:100%;height:100%;border:none}
+.riad-photo{flex:1;min-width:280px;max-width:500px;height:350px;object-fit:cover;border-radius:14px;box-shadow:0 15px 40px rgba(0,0,0,.1)}
+.gallery-centered{display:flex;gap:30px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:30px;width:100%;max-width:1200px}
+.gallery-centered img{width:100%;max-width:280px;height:380px;object-fit:cover;border-radius:14px;box-shadow:0 15px 40px rgba(0,0,0,.1)}
+@media(min-width:900px){h1{font-size:2.8rem}.sub{font-size:1.3rem}}
+@media(max-width:768px){.location-container{gap:20px}.map-wrap{max-width:100%}.riad-photo{max-width:100%}}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+<div id="fireworks"></div>
+<div id="bloom"></div>
+<div id="lightExplosion"></div>
+
+<div id="intro">
+  <div class="envelope-wrap" id="envelopeWrap">
+    <div class="envelope">
+      <div class="flap">Y&M</div>
+      <div class="seal">Y&M</div>
+    </div>
+    <div class="hint">Cliquez pour ouvrir</div>
+  </div>
+</div>
+
+<div class="website" id="website">
+<canvas id="trails-canvas" class="fireworks-bg"></canvas>
+<canvas id="main-canvas" class="fireworks-bg"></canvas>
+
+<section class="section">
+  <h1>Mariage ♥</h1>
+  <div class="sub">04 • 04 • 2026</div>
+  <div class="invitation-text">Nous vous invitons à célébrer<br>l'union de nos cœurs</div>
+  <div class="countdown">
+    <div class="counter"><h2 id="days">00</h2><span>Jours</span></div>
+    <div class="counter"><h2 id="hours">00</h2><span>Heures</span></div>
+    <div class="counter"><h2 id="minutes">00</h2><span>Minutes</span></div>
+    <div class="counter"><h2 id="seconds">00</h2><span>Secondes</span></div>
+  </div>
+  <div class="invitation-text-small">Rendez-vous le 4 avril 2026</div>
+</section>
+
+<section class="section">
+  <h1>Lieu</h1>
+  <div class="sub">Notre réception</div>
+  <div class="location-container">
+    <div class="map-wrap">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13287.123!2d-7.5898!3d33.5731" loading="lazy"></iframe>
+    </div>
+    <img src="https://images.unsplash.com/photo-1571508601155-3ebf3a2c7f7b?w=500&h=400&fit=crop" alt="Riad" class="riad-photo">
+  </div>
+</section>
+
+<section class="section">
+  <h1>Notre Histoire</h1>
+  <div class="sub">Des moments précieux</div>
+  <div class="gallery-centered">
+    <img src="https://picsum.photos/400/500?random=1" alt="Photo 1">
+    <img src="https://picsum.photos/400/500?random=2" alt="Photo 2">
+    <img src="https://picsum.photos/400/500?random=3" alt="Photo 3">
+  </div>
+</section>
+</div>
+
+<script>
+const envelope=document.getElementById('envelopeWrap');
+const intro=document.getElementById('intro');
+const website=document.getElementById('website');
+const fireworksContainer=document.getElementById('fireworks');
+const particlesContainer=document.getElementById('particles');
+const bloom=document.getElementById('bloom');
+const lightExplosion=document.getElementById('lightExplosion');
+let opened=false;
+
+function openEnvelope(){
+  if(opened)return;
+  opened=true;
+  envelope.classList.add('opening');
+  lightExplosion.classList.add('active');
+  setTimeout(()=>{bloom.classList.add('active');createFireworks();},500);
+  setTimeout(()=>{createParticles();},700);
+  setTimeout(()=>{intro.style.display='none';website.style.display='block';startFireworksAnimation();},2000);
+}
+
+function createFireworks(){
+  const colors=['#ff1493','#00bfff','#ffff00','#ff69b4','#87ceeb','#ff6347','#32cd32','#ffd700'];
+  const cx=window.innerWidth/2,cy=window.innerHeight/2;
+  for(let b=0;b<5;b++){
+    setTimeout(()=>{
+      for(let i=0;i<80;i++){
+        const angle=(i/80)*Math.PI*2+(Math.random()-.5)*.5;
+        const speed=Math.random()*300+250;
+        const vx=Math.cos(angle)*speed,vy=Math.sin(angle)*speed-150;
+        const fw=document.createElement('div');fw.className='firework';
+        const size=Math.random()*8+2,color=colors[Math.floor(Math.random()*colors.length)],dur=Math.random()*.8+1.2;
+        fw.style.cssText=`left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;background:${color};box-shadow:0 0 ${6+Math.random()*10}px ${color}`;
+        fw.style.setProperty('--vx',vx+'px');fw.style.setProperty('--vy',vy+'px');fw.style.setProperty('--duration',dur+'s');
+        fireworksContainer.appendChild(fw);
+        setTimeout(()=>{if(fw.parentNode)fw.remove();},dur*1000);
+      }
+    },b*150);
+  }
+}
+
+function createParticles(){
+  const colors=['#ff69b4','#87ceeb','#ffc0cb','#add8e6','#ff1493','#00bfff'];
+  const cx=window.innerWidth/2,cy=window.innerHeight/2;
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');p.className='particle';
+    const size=Math.random()*25+8,color=colors[Math.floor(Math.random()*colors.length)];
+    const angle=(i/30)*Math.PI*2,vel=Math.random()*200+150;
+    p.style.cssText=`left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;background:${color};opacity:.9`;
+    p.style.setProperty('--tx',Math.cos(angle)*vel+'px');p.style.setProperty('--ty',Math.sin(angle)*vel-50+'px');
+    particlesContainer.appendChild(p);
+    setTimeout(()=>{if(p.parentNode)p.remove();},1200);
+  }
+}
+
+function startFireworksAnimation(){
+  const colors=['#ff1493','#00bfff','#ffff00','#ff69b4','#87ceeb'];
+  setInterval(()=>{
+    const x=Math.random()*window.innerWidth,y=Math.random()*(window.innerHeight*.3);
+    for(let i=0;i<30;i++){
+      const angle=(i/30)*Math.PI*2,speed=Math.random()*150+100;
+      const vx=Math.cos(angle)*speed,vy=Math.sin(angle)*speed;
+      const fw=document.createElement('div');fw.className='firework';
+      const size=Math.random()*4+1,color=colors[Math.floor(Math.random()*colors.length)],dur=Math.random()*.6+.8;
+      fw.style.cssText=`left:${x}px;top:${y}px;width:${size}px;height:${size}px;background:${color};box-shadow:0 0 ${4+Math.random()*6}px ${color}`;
+      fw.style.setProperty('--vx',vx+'px');fw.style.setProperty('--vy',vy+'px');fw.style.setProperty('--duration',dur+'s');
+      fireworksContainer.appendChild(fw);
+      setTimeout(()=>{if(fw.parentNode)fw.remove();},dur*1000);
+    }
+  },1500);
+}
+
+envelope.addEventListener('click',openEnvelope);
+envelope.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEnvelope();}});
+
+const weddingDate=new Date("Apr 04, 2026 19:00:00").getTime();
+function updateCountdown(){
+  const d=Math.max(0,weddingDate-Date.now());
+  document.getElementById('days').textContent=String(Math.floor(d/(864e5))).padStart(2,'0');
+  document.getElementById('hours').textContent=String(Math.floor((d%864e5)/36e5)).padStart(2,'0');
+  document.getElementById('minutes').textContent=String(Math.floor((d%36e5)/6e4)).padStart(2,'0');
+  document.getElementById('seconds').textContent=String(Math.floor((d%6e4)/1000)).padStart(2,'0');
+}
+setInterval(updateCountdown,1000);updateCountdown();
+</script>
+</body>
+</html>
